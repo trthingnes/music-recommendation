@@ -1,0 +1,24 @@
+name: Build and push
+
+on:
+  push:
+    branches: ["main"]
+    patchs: { "survey-api/**" }
+  workflow_dispatch:
+jobs:
+  build-and-publish:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+      - name: Build and push image
+        working-directory: ./survey-api
+        run: |
+          docker build . --tag ghcr.io/trthingnes/music-recommendation-survey-api:latest
+          docker push ghcr.io/trthingnes/music-recommendation-survey-api:latest
