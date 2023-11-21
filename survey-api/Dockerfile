@@ -11,5 +11,7 @@ RUN pip install spotipy
 WORKDIR /api
 COPY . .
 
+EXPOSE 8080
+
 # Start the Python script
 CMD ["python", "api.py"]

@@ -19,6 +19,11 @@ def post_tracks_search():
 def get_track_features(id):
     return jsonify(get_spotify_track_features(id))
 
+@app.route("/submit")
+def submit():
+    body = request.get_json()
+    return jsonify(body)
+
 # Start the Flask API when file is executed
 if __name__ == "__main__":
     app.run(host='0.0.0.0', port=8080)

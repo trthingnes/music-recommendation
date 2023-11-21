@@ -21,7 +21,7 @@ def map_spotify_tracks_list(tracks):
     } for t in tracks]
 
 def get_spotify_search_results(query, page):
-    if not query or not page or query is "": 
+    if not query or not page or query == "": 
         return []
     
     response = spotify.search(q=query, limit=SPOTIFY_SEARCH_PAGE_SIZE, offset=(page - 1) * SPOTIFY_SEARCH_PAGE_SIZE)
@@ -43,6 +43,6 @@ def map_spotify_track_features(features):
     }
 
 def get_spotify_track_features(id):
-    if not id or id is "":
+    if not id or id == "":
         return None
     return map_spotify_track_features(spotify.audio_features(id)[0])
