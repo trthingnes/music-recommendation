@@ -1,6 +1,5 @@
 import os
 import numpy as np
-from collections import defaultdict
 from sklearn.cluster import KMeans
 from sklearn.preprocessing import StandardScaler
 from sklearn.pipeline import Pipeline
