@@ -1,27 +1,20 @@
-# Music Recommendation Survey API
+# Music Recommendation
 
-Survey API used for Mini R&amp;D Project in CS470 Introduction to Artificial Intelligence
+Mini R&amp;D Project in CS470 Introduction to Artificial Intelligence.
 
 ## Installation
 
 The required Python packages can be found as a list of run commands in the Dockerfile in the project root.
 
-To clone this API work you need to have the files `google-service-account-credentials.json` and `spotify-api-credentials.json` in the project root. The Google Sheets integration was used to save survey responses directly to a Google Sheet file, and the Spotify integration was used to allow users to get recommendations for any song available on Spotify.
-
-### Google Sheets Integration Setup
-
-1. Create a new project in Google Cloud and Enable the Google Sheets API.
-2. Create a Service Account with `Editor` access to the Google Cloud project.
-3. Create and download a key for the Service Account and save it with the name `google-service-account-credentials.json`.
-4. Create a Google Sheet file using any Google account and share it with the email that got generated for the Service Account.
-
-After completing these steps the API should be able to save responses to the new Google Sheets file.
+This project contains the implementation of the recommender system itself in the `recommender.py` file, as well as a survey API in the `api.py` file.
 
 ### Spotify Integration Setup
 
-1. Create a new app in the Spotify Developer Dashboard.
+Both `recommender.py` and `api.py` require access to the Spotify Web API to allow users to get recommendations for songs that are not in the dataset used for clustering. This section describes how to setup the Spotify Web API integration.
+
+1. Create a new app in the [Spotify Developer Dashboard](https://developer.spotify.com/dashboard).
 2. Select the Spotify Web API when picking services to use.
-3. Create the file `spotify-api-credentials.json` with the credentials from the app dashboard.
+3. Create the file `spotify-api-credentials.json` in `src` with the credentials from the app dashboard.
    ```json
    {
      "client_id": "<CLIENT_ID>",
@@ -29,8 +22,13 @@ After completing these steps the API should be able to save responses to the new
    }
    ```
 
-After completing these steps the API should be able to provide search results and track audio features from the Spotify Web API.
+### Google Sheets Integration Setup
 
-## Development
+The survey API requires access to Google Sheets to save responses. This section describes how to setup the Google Sheets integration.
 
-Once installation is completed the API can be tested locally by running `python api.py`.
+1. Create a new project in [Google Cloud](https://cloud.google.com) and Enable the Google Sheets API.
+2. Create a Service Account with `Editor` access to the Google Cloud project.
+3. Create and download a key for the Service Account and save it with the name `google-service-account-credentials.json` in `src`.
+4. Create a Google Sheet file using any Google account and share it with the email that got generated for the Service Account.
+
+After completing these steps the API should be able to save responses to the new Google Sheets file.
