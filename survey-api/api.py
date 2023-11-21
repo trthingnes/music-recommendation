@@ -19,7 +19,7 @@ def post_tracks_search():
 def get_track_features(id):
     return jsonify(get_spotify_track_features(id))
 
-@app.route("/submit")
+@app.route("/submit", methods = ["POST"])
 def submit():
     body = request.get_json()
     return jsonify(body)
