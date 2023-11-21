@@ -42,19 +42,21 @@ def get_spotify_search_results(query: str, page: int, page_size: int):
 
 
 def _map_spotify_track_features(features):
-    return pd.DataFrame({
-        "acousticness": [features["acousticness"]],
-        "danceability": [features["danceability"]],
-        "energy": [features["energy"]],
-        "instrumentalness": [features["instrumentalness"]],
-        "key": [features["key"]],
-        "liveness": [features["liveness"]],
-        "loudness": [features["loudness"]],
-        "mode": [features["mode"]],
-        "speechiness": [features["speechiness"]],
-        "tempo": [features["tempo"]],
-        "valence": [features["valence"]]
-    })
+    return pd.DataFrame(
+        {
+            "acousticness": [features["acousticness"]],
+            "danceability": [features["danceability"]],
+            "energy": [features["energy"]],
+            "instrumentalness": [features["instrumentalness"]],
+            "key": [features["key"]],
+            "liveness": [features["liveness"]],
+            "loudness": [features["loudness"]],
+            "mode": [features["mode"]],
+            "speechiness": [features["speechiness"]],
+            "tempo": [features["tempo"]],
+            "valence": [features["valence"]],
+        }
+    )
 
 
 def get_spotify_track_features(id: str):

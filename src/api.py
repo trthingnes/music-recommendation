@@ -8,7 +8,7 @@ app = Flask(__name__)
 recommenders = [
     Recommender(n_clusters=5, clustering_features=["danceability", "energy"]),
     Recommender(n_clusters=5, clustering_features=["danceability"]),
-    Recommender(n_clusters=5, clustering_features=["energy"])
+    Recommender(n_clusters=5, clustering_features=["energy"]),
 ]
 
 
@@ -34,12 +34,19 @@ def post_recommendations_request():
 
     recommendations = []
     for recommender in recommenders:
-        recommendation = recommender.recommend(track_ids, n)[display_columns].to_dict(orient="records")
-        recommendations.append([{
-            "artists": ast.literal_eval(track["artists"]),
-            "id": track["id"],
-            "name": track["name"]
-        } for track in recommendation])
+        recommendation = recommender.recommend(track_ids, n)[display_columns].to_dict(
+            orient="records"
+        )
+        recommendations.append(
+            [
+                {
+                    "artists": ast.literal_eval(track["artists"]),
+                    "id": track["id"],
+                    "name": track["name"],
+                }
+                for track in recommendation
+            ]
+        )
 
     return jsonify(recommendations)
 

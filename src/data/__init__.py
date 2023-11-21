@@ -19,8 +19,4 @@ feature_columns = [
 ]
 
 # * Columns used to display results
-display_columns = [
-    "id",
-    "name",
-    "artists"
-]
+display_columns = ["id", "name", "artists"]
