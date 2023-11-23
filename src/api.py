@@ -25,8 +25,9 @@ def post_tracks_search():
     body = request.get_json()
     query = body.get("query", "")
     page = body.get("page", 1)
+    size = body.get("size", 5)
 
-    return jsonify(get_spotify_search_results(query, page, page_size=5))
+    return jsonify(get_spotify_search_results(query, page, page_size=size))
 
 
 @app.route("/recommend", methods=["POST"])
