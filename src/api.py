@@ -1,5 +1,6 @@
 import ast
 from flask import Flask, jsonify, request
+from flask_cors import cross_origin
 from recommender import Recommender
 from data import display_columns
 from integrations.spotify import get_spotify_search_results
@@ -13,11 +14,13 @@ recommenders = [
 
 
 @app.route("/")
+@cross_origin()
 def root():
     return jsonify({"status": "running"})
 
 
 @app.route("/search", methods=["POST"])
+@cross_origin()
 def post_tracks_search():
     body = request.get_json()
     query = body.get("query", "")
@@ -27,6 +30,7 @@ def post_tracks_search():
 
 
 @app.route("/recommend", methods=["POST"])
+@cross_origin()
 def post_recommendations_request():
     body = request.get_json()
     track_ids = body.get("track_ids", [])
@@ -52,6 +56,7 @@ def post_recommendations_request():
 
 
 @app.route("/submit", methods=["POST"])
+@cross_origin()
 def submit():
     body = request.get_json()
     return jsonify(body)

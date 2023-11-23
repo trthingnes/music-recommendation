@@ -2,6 +2,7 @@ FROM python:3.12
 
 # Install the required Python packages to run the API
 RUN pip install flask
+RUN pip install flask-cors
 RUN pip install numpy
 RUN pip install scipy
 RUN pip install scikit-learn
