@@ -6,18 +6,19 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics.pairwise import euclidean_distances
 
 from data import dataset, feature_columns
-from integrations.spotify import get_spotify_track_features
+from integrations.spotify import get_spotify_track_information
 
 
-class Recommender:
-    def __init__(self, n_clusters, clustering_features):
-        # * Make sure that all features given exist in the dataset
+class KMeansRecommender:
+    def __init__(self, id: str, n_clusters: int, clustering_features: list[str]):
+        # Make sure that all features given exist in the dataset
         for feature in clustering_features:
             if feature not in feature_columns:
                 raise Exception(f"Feature '{feature}' was not recognized")
 
         os.environ["LOKY_MAX_CPU_COUNT"] = "1"
 
+        self.id = id
         self.n_clusters = n_clusters
         self.clustering_features = clustering_features
         self.pipeline = Pipeline(
@@ -28,11 +29,13 @@ class Recommender:
         )
         self.x = dataset[clustering_features]
 
-        print(f"Clustering using features {self.clustering_features}")
+        print(
+            f"Recommender '{self.id}' is recommending using features {self.clustering_features}"
+        )
         self.pipeline.fit(self.x)
 
     def recommend(self, track_ids: list[str], n: int):
-        """Recommends `n` songs based on the given `track_ids`"""
+        """Recommends `n` songs based on the given `track_ids` and returns the recommendations and the recommender `id`"""
         tracks_mean = self._get_mean_from_tracks(track_ids)
 
         pipeline_scaler = self.pipeline.steps[0][1]
@@ -43,7 +46,7 @@ class Recommender:
         track_indexes = list(np.argsort(ed_dist)[:, 1 : n + 1][0])
         track_recommendations = dataset.iloc[track_indexes]
 
-        return track_recommendations
+        return track_recommendations, self.id
 
     def _get_mean_from_tracks(self, track_ids):
         """Combines all tracks into a single mean audio feature vector"""
@@ -62,7 +65,7 @@ class Recommender:
             print(f"Track with ID {track_id} found in CSV file")
         except Exception:
             print(f"Track with ID {track_id} not found in CSV file, checking Spotify")
-            track_feature_vector = get_spotify_track_features(track_id)
+            track_feature_vector = get_spotify_track_information(track_id)
 
         if track_feature_vector is None:
             raise Exception(
@@ -70,3 +73,12 @@ class Recommender:
             )
 
         return track_feature_vector[self.clustering_features].values
+
+
+class RandomRecommender(KMeansRecommender):
+    def __init__(self, id: str):
+        self.id = id
+        print(f"Recommender '{self.id}' is recommmending randomly")
+
+    def recommend(self, track_ids: list[str], n: int):
+        return dataset.sample(n=n), self.id

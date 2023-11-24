@@ -41,9 +41,11 @@ def get_spotify_search_results(query: str, page: int, page_size: int):
     return _map_spotify_tracks_list(response["tracks"]["items"])
 
 
-def _map_spotify_track_features(features):
+def _map_spotify_data(track, features):
     return pd.DataFrame(
         {
+            "explicit": [track["explicit"]],
+            "popularity": [track["popularity"]],
             "acousticness": [features["acousticness"]],
             "danceability": [features["danceability"]],
             "energy": [features["energy"]],
@@ -59,9 +61,9 @@ def _map_spotify_track_features(features):
     )
 
 
-def get_spotify_track_features(id: str):
+def get_spotify_track_information(id: str):
     if not id or id == "":
         print("Ignoring a track ID that was blank or none")
         return None
 
-    return _map_spotify_track_features(spotify.audio_features(id)[0])
+    return _map_spotify_data(spotify.track(id), spotify.audio_features(id)[0])

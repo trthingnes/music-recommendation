@@ -4,6 +4,8 @@ dataset = pd.read_csv("data/data.csv")
 
 # * Use feature columns that are available in CSV and API
 feature_columns = [
+    "explicit",
+    "popularity",
     "valence",
     "acousticness",
     "danceability",
