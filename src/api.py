@@ -1,9 +1,10 @@
 import ast
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, Response
 from flask_cors import cross_origin
 from recommender import KMeansRecommender, RandomRecommender
 from data import display_columns
 from integrations.spotify import get_spotify_search_results
+from integrations.sheets import construct_response, write_response_to_google_sheets
 
 DEFAULT_SEARCH_SIZE = 5
 DEFAULT_RECOMMENDATION_SIZE = 3
@@ -33,7 +34,7 @@ recommenders = [
 @app.route("/")
 @cross_origin()
 def root():
-    return jsonify({"status": "running"})
+    return jsonify({"status": "up"})
 
 
 @app.route("/search", methods=["POST"])
@@ -73,7 +74,22 @@ def post_recommendations_request():
 @cross_origin()
 def submit():
     body = request.get_json()
-    return jsonify(body)
+
+    track_ids = body.get("track_ids", [])
+    r1_id = body.get("r1_id", "")
+    r2_id = body.get("r2_id", "")
+    r3_id = body.get("r3_id", "")
+    r4_id = body.get("r4_id", "")
+    relevance = body.get("relevance", -1)
+    diversity = body.get("diversity", -1)
+    genre = body.get("genre", -1)
+    mood = body.get("mood", -1)
+    general = body.get("general", -1)
+
+    response = construct_response(track_ids, r1_id, r2_id, r3_id, r4_id, relevance, diversity, genre, mood, general)
+    write_response_to_google_sheets(response)
+
+    return Response(status=200)
 
 
 # Start the Flask API when file is executed

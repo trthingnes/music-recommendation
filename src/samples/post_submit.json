@@ -1,0 +1,16 @@
+// Request Body
+{
+  "track_ids": ["40SBS57su9xLiE1WqkXOVr"],
+  "r1_id": "4DmbZ96tQFGJKyDfAYe6cQ",
+  "r2_id": "2BtIXTKrTGQJeFcIukMR9E",
+  "r3_id": "13bG82E1sYKpS4Frrv1a37",
+  "r4_id": "2cK8gp8vydgWEGTEZ5aLBd",
+  "relevance": 0,
+  "diversity": 0,
+  "genre": 0,
+  "mood": 0,
+  "general": 0
+}
+
+// Response
+"200 OK"

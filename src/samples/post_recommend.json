@@ -1,0 +1,37 @@
+// Request Body
+{
+    "track_ids": ["40SBS57su9xLiE1WqkXOVr"],
+    "n": 1
+}
+
+// Response Body
+{
+  "1": [
+    {
+      "artists": ["The Clash"],
+      "id": "4DmbZ96tQFGJKyDfAYe6cQ",
+      "name": "Lightning Strikes (Not Once but Twice) - Remastered"
+    }
+  ],
+  "2": [
+    {
+      "artists": ["Ollie & Jerry"],
+      "id": "2BtIXTKrTGQJeFcIukMR9E",
+      "name": "Breakin'...There's No Stopping Us"
+    }
+  ],
+  "3": [
+    {
+      "artists": ["Sisters of Mercy"],
+      "id": "13bG82E1sYKpS4Frrv1a37",
+      "name": "Poison Door"
+    }
+  ],
+  "4": [
+    {
+      "artists": ["Dennis Wilson"],
+      "id": "2cK8gp8vydgWEGTEZ5aLBd",
+      "name": "You and I"
+    }
+  ]
+}

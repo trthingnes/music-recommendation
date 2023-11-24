@@ -1,0 +1,33 @@
+// Request Body
+{
+    "query": "afraid to feel"
+}
+
+// Response Body
+[
+  {
+    "artists": ["LF SYSTEM"],
+    "id": "40SBS57su9xLiE1WqkXOVr",
+    "name": "Afraid To Feel"
+  },
+  {
+    "artists": ["LF SYSTEM", "David Guetta", "Dyro"],
+    "id": "4uRxhu6ga4eIWUBz5h3Wtd",
+    "name": "Afraid To Feel - David Guetta & Dyro Remix"
+  },
+  {
+    "artists": ["Kidz Bop Kids"],
+    "id": "1MhkTvxn5GvI3KBFqfC4V0",
+    "name": "Afraid To Feel"
+  },
+  {
+    "artists": ["LF SYSTEM", "Armand Van Helden"],
+    "id": "51OxloIr20otj9jvjONlkJ",
+    "name": "Afraid To Feel - Armand Van Helden Remix"
+  },
+  {
+    "artists": ["LF SYSTEM"],
+    "id": "0TGwWggnl63jvn6FLki4LY",
+    "name": "Afraid to Feel"
+  }
+]
