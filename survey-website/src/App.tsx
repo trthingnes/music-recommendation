@@ -1,62 +1,79 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import "./App.css";
 
-import Data from "./data.json";
-import { Button, IconButton, Tooltip, Typography } from "@mui/material";
-import { ArrowLeft, ArrowRight, Delete, Search } from "@mui/icons-material";
-interface Data {
+import { Button, Grid, Radio, Tooltip, Typography } from "@mui/material";
+import { Delete, Search } from "@mui/icons-material";
+import MusicAudioDisplay from "./music-audio-display";
+import Confetti from "react-confetti";
+export interface Data {
   id: string;
-  artists: string | undefined;
+  artists: string[] | undefined;
   name: string;
   year: string;
 }
 
-const ITEMS_PER_PAGE: number = 100;
+interface ISubmissionObject {
+  track_ids: string[];
+  r1_id: string;
+  r2_id: string;
+  r3_id: string;
+  r4_id: string;
+  relevance: number;
+  diversity: number;
+  genre: number;
+  mood: number;
+  general: number;
+}
+
+const url = process.env.REACT_APP_BE_URL ?? "";
+
+const criteria = [
+  {
+    name: "Relevance",
+    description: "Which is the most relevant song with the one you selected?",
+  },
+  {
+    name: "Diversity",
+    description:
+      "Which is the song that is the most different from the one you selected but that you enjoyed?",
+  },
+  {
+    name: "Genre",
+    description:
+      "Which is the song that is the most close to the genre of the ones you selected?",
+  },
+  {
+    name: "Mood",
+    description:
+      "Which is the song that best represents the mood of you selections?",
+  },
+  {
+    name: "General",
+    description: "Which is the suggestion that you liked the most in general?",
+  },
+];
 
 function App() {
-  const [data, setData] = useState<any[]>(Data as any[]);
   const [search, setSearch] = useState<string>("");
-
-  const [filteredData, setFilteredData] = useState<Data[]>(Data as Data[]);
-  const [dataInPage, setDataInPage] = useState<Data[]>([]);
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const [maxPage, setMaxPage] = useState<number>(
-    Math.ceil(data.length / ITEMS_PER_PAGE)
-  );
-
-  useEffect(() => {
-    if (!filteredData) {
-      setDataInPage([]);
-      return;
-    }
-    const newData = filteredData.slice(
-      (currentPage - 1) * ITEMS_PER_PAGE,
-      currentPage * ITEMS_PER_PAGE
-    );
-    setDataInPage(newData);
-  }, [filteredData, currentPage]);
+  //Null if not yet searched
+  const [dataInPage, setDataInPage] = useState<Data[] | null>(null);
 
   const handleSearch = () => {
-    if (!data) setFilteredData([]);
-    if (!search)
-      setFilteredData(data.filter((item: Data) => item?.id !== undefined));
-    const regex = new RegExp(search, "i");
-    const a = data?.filter((item: Data) => {
-      return (
-        regex.test(item.name) ||
-        regex.test(item.artists ?? "") ||
-        regex.test(item.year)
-      );
-    });
-    const b = a.filter((item: Data) => item?.id !== undefined);
-    setFilteredData(b);
-    setMaxPage(Math.ceil(b.length / ITEMS_PER_PAGE));
-    setCurrentPage(1);
-  };
-
-  const handleIncrementPage = (value: number) => {
-    if (currentPage + value < 1 || currentPage + value > maxPage) return;
-    setCurrentPage(currentPage + value);
+    fetch(`${url}/search`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ query: search, size: 50 }),
+    })
+      .then((res) => res.json())
+      .then((res) => {
+        // console.log("Res", res);
+        setDataInPage(res);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   };
 
   const [selected, setSelected] = useState<{ id: string; name: string }[]>([]);
@@ -64,7 +81,7 @@ function App() {
   const handleSelected = (id: string, name: string) => {
     const index = selected.findIndex((item) => item.id === id);
     if (index === -1) {
-      setSelected([...selected, { id, name }]);
+      if (selected.length < 5) setSelected([...selected, { id, name }]);
     } else {
       const newSelected = [...selected];
       newSelected.splice(index, 1);
@@ -79,7 +96,36 @@ function App() {
   };
 
   const handleClickSubmit = () => {
-    //TODO: call the API
+    fetch(`${url}/recommend`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        track_ids: selected.map((song) => song.id),
+        n: 1,
+      }),
+    })
+      .then((res) => res.json())
+      .then((res: { 1: any[]; 2: any[]; 3: any[]; 4: any[] }[]) => {
+        const resultArray = ([] as any[]).concat(...Object.values(res));
+        setSubmissionObject({
+          track_ids: selected.map((song) => song.id),
+          r1_id: resultArray[0].id,
+          r2_id: resultArray[1].id,
+          r3_id: resultArray[2].id,
+          r4_id: resultArray[3].id,
+          relevance: 0,
+          diversity: 0,
+          genre: 0,
+          mood: 0,
+          general: 0,
+        });
+        setRecommendations(resultArray);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
     setSelectionPhase(false);
   };
 
@@ -87,34 +133,43 @@ function App() {
   // Grading results page
   const [selectionPhase, setSelectionPhase] = useState<boolean>(true);
 
-  const [recommendations, setRecommendations] = useState<Data[]>([
-    {
-      id: "2mvn2MHPnPJeqgDrZKDnQZ",
-      artists: "['Yelawolf']",
-      name: "Catfish Billy 2",
-      year: "2019",
-    },
-    {
-      id: "2sqE9z7rJlzV5ZgieeUatU",
-      artists: "['Matter and Energy']",
-      name: "Orbital",
-      year: "2019",
-    },
-    {
-      id: "64BKKgWdKdmKlQDzRfHW3C",
-      artists: "['Louis The Child', 'Drew Love']",
-      name: "Free (with Drew Love)",
-      year: "2019",
-    },
-  ]);
+  const [recommendations, setRecommendations] = useState<Data[]>([]);
 
-  const [recommendationSelected, setRecommendationSelected] = useState<
-    string | null
-  >(null);
+  const [submissionObject, setSubmissionObject] = useState<ISubmissionObject>(
+    {} as ISubmissionObject
+  );
+
+  const [gradings, setGradings] = useState<number[]>([0, 0, 0, 0, 0]);
 
   const handleSubmitGrading = () => {
-    //TODO: call the API
-    setThankYou(true);
+    const submitObject = {
+      ...submissionObject,
+      relevance: gradings[0],
+      diversity: gradings[1],
+      genre: gradings[2],
+      mood: gradings[3],
+      general: gradings[4],
+    };
+    fetch(`${url}/submit`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(submitObject),
+    }).then((_) => {
+      setThankYou(true);
+    });
+  };
+
+  const resetApp = () => {
+    setSearch("");
+    setDataInPage(null);
+    setSelected([]);
+    setSelectionPhase(true);
+    setRecommendations([]);
+    setSubmissionObject({} as ISubmissionObject);
+    setGradings([0, 0, 0, 0, 0]);
+    setThankYou(false);
   };
 
   // =======================================
@@ -127,9 +182,11 @@ function App() {
         flexDirection: "column",
         width: "100vw",
         height: "100vh",
-        overflow: "hidden",
+        overflowY: "auto",
+        overflowX: "hidden",
       }}
     >
+      <div id="embed-iframe" />
       {selectionPhase ? (
         <>
           <div
@@ -161,37 +218,12 @@ function App() {
             />
             <Button
               variant="contained"
-              style={{ borderRadius: 8 }}
+              style={{ borderRadius: 8, minWidth: 90 }}
               startIcon={<Search />}
               onClick={handleSearch}
               sx={{ textTransform: "unset" }}
             >
               Search
-            </Button>
-            {selected.length > 0 && (
-              <Button
-                variant="contained"
-                color="error"
-                style={{ borderRadius: 8 }}
-                startIcon={<Delete />}
-                onClick={() => setSelected([])}
-                sx={{ textTransform: "unset" }}
-              >
-                Delete all
-              </Button>
-            )}
-            <div style={{ flex: 1 }} />
-            <span style={{ fontSize: 16, fontWeight: 500 }}>
-              Select at least 5 songs to submit
-            </span>
-            <Button
-              style={{ textTransform: "unset", borderRadius: 8 }}
-              color="secondary"
-              variant="contained"
-              disabled={selected.length < 5}
-              onClick={handleClickSubmit}
-            >
-              Submit
             </Button>
           </div>
           {selected.length > 0 && (
@@ -209,7 +241,6 @@ function App() {
                   <div
                     style={{
                       borderRadius: 12,
-                      height: 24,
                       maxWidth: 210,
                       overflow: "hidden",
                       textOverflow: "ellipsis",
@@ -252,6 +283,7 @@ function App() {
                   </div>
                 );
               })}
+              {selected.length === 5 && <div style={{ color: "red" }}>5/5</div>}
             </div>
           )}
           <div
@@ -264,54 +296,78 @@ function App() {
               width: "100%",
             }}
           >
-            {dataInPage?.map((item: Data) => {
-              return (
-                <div
-                  key={item.id}
-                  style={{
-                    borderBlock: "1px solid grey",
-                    padding: 6,
-                    display: "flex",
-                    width: "100%",
-                    flexDirection: "column",
-                    boxSizing: "border-box",
-                    cursor: "pointer",
-                  }}
-                  onClick={() => handleSelected(item.id, item.name)}
-                >
-                  <span>
-                    <b>{item.name}</b>
-                  </span>
-                  <span>{item.artists}</span>
-                  <span>{item.year}</span>
-                </div>
-              );
-            })}
+            {dataInPage === null ? (
+              <div
+                style={{
+                  display: "flex",
+                  width: "100%",
+                  height: "100%",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  color: `#888888`,
+                  fontSize: 28,
+                }}
+              >
+                Search your favorite songs with the search bar!
+              </div>
+            ) : (
+              dataInPage?.map((item: Data) => {
+                return (
+                  <div
+                    key={item.id}
+                    style={{
+                      borderBlock: "1px solid grey",
+                      padding: 6,
+                      display: "flex",
+                      width: "100%",
+                      flexDirection: "column",
+                      boxSizing: "border-box",
+                      cursor: "pointer",
+                    }}
+                    onClick={() => handleSelected(item.id, item.name)}
+                  >
+                    <span>
+                      <b>{item.name}</b>
+                    </span>
+                    <span>{item.artists?.join(", ")}</span>
+                    <span>{item.year}</span>
+                  </div>
+                );
+              })
+            )}
           </div>
           <div
             style={{
-              height: 40,
-              alignSelf: "flex-end",
-              width: "100%",
               display: "flex",
+              width: "100%",
+              alignItems: "flex-end",
               justifyContent: "flex-end",
-              alignItems: "center",
-              borderTop: "1px solid grey",
+              padding: 8,
+              boxSizing: "border-box",
             }}
           >
-            <IconButton
-              disabled={currentPage === 1}
-              onClick={() => handleIncrementPage(-1)}
+            {selected.length > 0 && (
+              <Button
+                variant="contained"
+                color="error"
+                style={{ borderRadius: 8 }}
+                startIcon={<Delete />}
+                onClick={() => setSelected([])}
+                sx={{ textTransform: "unset" }}
+              >
+                Delete
+              </Button>
+            )}
+            <div style={{ flex: 1 }} />
+            <Button
+              style={{ textTransform: "unset", borderRadius: 8 }}
+              color="secondary"
+              variant="contained"
+              onClick={handleClickSubmit}
+              disabled={selected.length === 0}
             >
-              <ArrowLeft />
-            </IconButton>
-            <span>{currentPage}</span>
-            <IconButton
-              disabled={currentPage === maxPage}
-              onClick={() => handleIncrementPage(1)}
-            >
-              <ArrowRight />
-            </IconButton>
+              Submit
+            </Button>
           </div>
         </>
       ) : !thankYou ? (
@@ -323,66 +379,128 @@ function App() {
             flexDirection: "column",
             alignItems: "center",
             gap: 32,
-            paddingTop: 16
+            padding: 16,
+            boxSizing: "border-box",
           }}
         >
           <Typography fontSize={24} fontWeight={500} lineHeight={"30px"}>
-            These are our suggestions. Pick your favorite one!
+            These are our suggestions
           </Typography>
+          <Grid container spacing={2}>
+            {recommendations.map((item: Data) => {
+              return (
+                <Grid item xs={12} sm={6} xl={3}>
+                  <MusicAudioDisplay key={item.id} song={item} />
+                </Grid>
+              );
+            })}
+          </Grid>
+          <div
+            style={{ display: "flex", flexDirection: "column", width: "100%" }}
+          >
+            <Typography fontSize={26} fontWeight={500} lineHeight={"30px"}>
+              Give us your feedback regarding our suggestions.
+            </Typography>
+            <Typography
+              fontSize={18}
+              fontWeight={500}
+              lineHeight={"24px"}
+              color={"#888888"}
+            >
+              We will ask you to select the best song in your opinion based on
+              different criteria.
+            </Typography>
+            <div
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                gap: 16,
+                alignItems: "center",
+              }}
+            >
+              {criteria.map((item, index) => {
+                return (
+                  <div
+                    style={{
+                      display: "flex",
+                      flexDirection: "column",
+                      gap: 8,
+                      width: "100%",
+                    }}
+                  >
+                    <Typography
+                      fontSize={24}
+                      fontWeight={500}
+                      lineHeight={"24px"}
+                    >
+                      {index + 1}. {item.name}
+                    </Typography>
+                    <Typography
+                      fontSize={16}
+                      fontWeight={500}
+                      lineHeight={"22px"}
+                      color={"#888888"}
+                    >
+                      {item.description}
+                    </Typography>
+                    <Grid container style={{ display: "flex", width: "100%" }}>
+                      {recommendations.map((song, index2) => {
+                        return (
+                          <Grid
+                            item
+                            xs={12}
+                            lg={3}
+                            style={{
+                              display: "flex",
+                              alignItems: "center",
+                              gap: 3,
+                              overflow: "hidden",
+                            }}
+                            onClick={() => {
+                              const newGradings = [...gradings];
+                              newGradings[index] = index2 + 1;
+                              setGradings(newGradings);
+                            }}
+                          >
+                            <Radio checked={gradings[index] === index2 + 1} />
+                            <Typography
+                              fontSize={16}
+                              fontWeight={500}
+                              lineHeight={"22px"}
+                            >
+                              {song.name}
+                            </Typography>
+                          </Grid>
+                        );
+                      })}
+                    </Grid>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
           <div
             style={{
               display: "flex",
               width: "100%",
-              alignItems: "center",
-              justifyContent: "space-evenly",
+              justifyContent: "center",
+              paddingBottom: 12,
             }}
           >
-            {recommendations.map((item: Data) => {
-              const selected = item.id === recommendationSelected;
-              return (
-                <div
-                  style={{
-                    display: "flex",
-                    flexDirection: "column",
-                    borderRadius: 12,
-                    border: selected ? "2px solid red" : "1px solid grey",
-                    padding: 8,
-                    width: "25%",
-                    cursor: "pointer",
-                    overflow: "hidden",
-                  }}
-                  onClick={() => {
-                    setRecommendationSelected(item.id);
-                  }}
-                  key={item.id}
-                >
-                  <Typography
-                    fontSize={18}
-                    fontWeight={600}
-                    noWrap
-                    lineHeight={"22px"}
-                  >
-                    {item.name}
-                  </Typography>
-                  <Typography noWrap lineHeight={"22px"}>
-                    {item.artists}
-                  </Typography>
-                  <Typography noWrap lineHeight={"22px"}>
-                    {item.year}
-                  </Typography>
-                </div>
-              );
-            })}
+            <Button
+              disabled={gradings.includes(0)}
+              onClick={handleSubmitGrading}
+              style={{
+                textTransform: "unset",
+                width: "fit-content",
+                borderRadius: 8,
+              }}
+              variant="contained"
+              color="secondary"
+            >
+              Submit
+            </Button>
           </div>
-          <Button
-            disabled={!recommendationSelected}
-            onClick={handleSubmitGrading}
-            style={{ textTransform: "unset", width: "fit-content", borderRadius: 8 }}
-            variant="contained"
-            color="secondary"
-          >
-            Submit
-          </Button>
         </div>
       ) : (
         <div
@@ -395,9 +513,18 @@ function App() {
             justifyContent: "center",
           }}
         >
-          <Typography fontSize={32} fontWeight={600}>
+          <Confetti />
+          <Typography fontSize={24} fontWeight={600}>
             Thank you for your time!
           </Typography>
+          <Button
+            color="primary"
+            onClick={resetApp}
+            variant="contained"
+            style={{ borderRadius: 8 }}
+          >
+            Search again!
+          </Button>
         </div>
       )}
     </div>
