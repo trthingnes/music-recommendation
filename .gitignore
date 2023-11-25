@@ -160,3 +160,29 @@ cython_debug/
 #  and can be added to the global gitignore or merged into this file.  For a more nuclear
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
+
+
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/survey-website/node_modules
+/survey-website/.pnp
+/survey-website.pnp.js
+
+# testing
+/survey-website/coverage
+
+# production
+/survey-website/build
+
+# misc
+/survey-website.DS_Store
+/survey-website.env.local
+/survey-website.env.development.local
+/survey-website.env.test.local
+/survey-website.env.production.local
+
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
