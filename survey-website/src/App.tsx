@@ -390,8 +390,8 @@ function App() {
           <Grid container spacing={2}>
             {recommendations.map((item: Data) => {
               return (
-                <Grid item xs={12} sm={6} xl={3}>
-                  <MusicAudioDisplay key={item.id} song={item} />
+                <Grid key={item.id} item xs={12} sm={6} xl={3}>
+                  <MusicAudioDisplay song={item} />
                 </Grid>
               )
             })}
@@ -423,6 +423,7 @@ function App() {
               {criteria.map((item, index) => {
                 return (
                   <div
+                    key={index}
                     style={{
                       display: "flex",
                       flexDirection: "column",
@@ -449,6 +450,7 @@ function App() {
                       {recommendations.map((song, index2) => {
                         return (
                           <Grid
+                            key={index2}
                             item
                             xs={12}
                             lg={3}

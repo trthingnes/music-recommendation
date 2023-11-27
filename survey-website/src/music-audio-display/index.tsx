@@ -11,7 +11,6 @@ const MusicAudioDisplay = ({ song }: IProps) => {
       `https://open.spotify.com/oembed?url=https://open.spotify.com/track/${song.id}`
     ).then((res) => {
       res.json().then((json) => {
-        console.log("Json", json);
         let div = document.getElementById(song.id);
         if (div) {
           div.innerHTML = json.html;
