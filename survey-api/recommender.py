@@ -43,10 +43,15 @@ class KMeansRecommender:
         scaled_tracks_mean = pipeline_scaler.transform(tracks_mean.reshape(1, -1))
 
         ed_dist = euclidean_distances(scaled_tracks_mean, scaled_data)
-        track_indexes = list(np.argsort(ed_dist)[:, 1 : n + 1][0])
-        track_recommendations = dataset.iloc[track_indexes]
+        recommendations_df = dataset.iloc[list(np.argsort(ed_dist)[:,:][0])]
+        track_recommendations = self._remove_input_tracks_from_recommendations(track_ids, recommendations_df)
 
-        return track_recommendations, self.id
+        return track_recommendations[:n], self.id
+    
+    def _remove_input_tracks_from_recommendations(self, track_ids, df):
+        """Removes all input songs from the recommendation output"""
+        print(df)
+        return df[~(df["id"].isin(track_ids))]
 
     def _get_mean_from_tracks(self, track_ids):
         """Combines all tracks into a single mean audio feature vector"""

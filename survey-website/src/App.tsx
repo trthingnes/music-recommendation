@@ -400,7 +400,7 @@ function App() {
             style={{ display: "flex", flexDirection: "column", width: "100%" }}
           >
             <Typography fontSize={26} fontWeight={500} lineHeight={"30px"}>
-              Give us your feedback regarding our suggestions.
+              Give us your feedback regarding our suggestions
             </Typography>
             <Typography
               fontSize={18}
@@ -410,7 +410,7 @@ function App() {
               paddingBottom={3}
             >
               We will ask you to select the best song in your opinion based on
-              different criteria.
+              different criteria
             </Typography>
             <div
               style={{
