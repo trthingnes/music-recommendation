@@ -1,6 +1,0 @@
-{
-  "dependencies": {
-    "@types/papaparse": "^5.3.11",
-    "papaparse": "^5.4.1"
-  }
-}

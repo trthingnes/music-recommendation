@@ -13,8 +13,8 @@ RUN pip install google-auth-httplib2
 RUN pip install google-api-python-client
 
 # Create folder for the API and copy files into it
-WORKDIR /api
-COPY src .
+WORKDIR /survey-api
+COPY . .
 
 EXPOSE 8080
 
