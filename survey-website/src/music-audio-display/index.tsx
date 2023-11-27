@@ -1,6 +1,5 @@
-import React, { useEffect, useLayoutEffect } from "react";
+import { useEffect } from "react";
 import { Data } from "../App";
-import { Typography } from "@mui/material";
 
 interface IProps {
   song: Data;
@@ -19,7 +18,7 @@ const MusicAudioDisplay = ({ song }: IProps) => {
         }
       });
     });
-  }, []);
+  }, [song.id]);
   return <div id={song.id} />;
 };
 

@@ -1,62 +1,63 @@
-import React, { useState } from "react";
-import "./App.css";
+import { useState } from "react"
+import "./App.css"
 
-import { Button, Grid, Radio, Tooltip, Typography } from "@mui/material";
-import { Delete, Search } from "@mui/icons-material";
-import MusicAudioDisplay from "./music-audio-display";
-import Confetti from "react-confetti";
+import { Button, Grid, Radio, Tooltip, Typography } from "@mui/material"
+import { Delete, Search } from "@mui/icons-material"
+import MusicAudioDisplay from "./music-audio-display"
+import Confetti from "react-confetti"
 export interface Data {
-  id: string;
-  artists: string[] | undefined;
-  name: string;
-  year: string;
+  id: string
+  artists: string[] | undefined
+  name: string
+  year: string
 }
 
 interface ISubmissionObject {
-  track_ids: string[];
-  r1_id: string;
-  r2_id: string;
-  r3_id: string;
-  r4_id: string;
-  relevance: number;
-  diversity: number;
-  genre: number;
-  mood: number;
-  general: number;
+  track_ids: string[]
+  r1_id: string
+  r2_id: string
+  r3_id: string
+  r4_id: string
+  relevance: number
+  diversity: number
+  genre: number
+  mood: number
+  general: number
 }
 
-const url = process.env.REACT_APP_BE_URL ?? "";
+const url = process.env.REACT_APP_BE_URL ?? ""
 
 const criteria = [
   {
     name: "Relevance",
-    description: "Which is the most relevant song with the one you selected?",
+    description: "Which song is the most relevant to the ones you selected?",
   },
   {
     name: "Diversity",
     description:
-      "Which is the song that is the most different from the one you selected but that you enjoyed?",
+      "Which song is most different while still being relevant to the ones you selected?",
   },
   {
     name: "Genre",
     description:
-      "Which is the song that is the most close to the genre of the ones you selected?",
+      "Which song best represents the genre of the ones you selected?",
   },
   {
     name: "Mood",
     description:
-      "Which is the song that best represents the mood of you selections?",
+      "Which song best represents the mood of the ones you selected?",
   },
   {
     name: "General",
-    description: "Which is the suggestion that you liked the most in general?",
+    description:
+      "Which song is the best suggestion based on the ones you selected?",
   },
-];
+]
 
 function App() {
-  const [search, setSearch] = useState<string>("");
+  const [search, setSearch] = useState<string>("")
   //Null if not yet searched
-  const [dataInPage, setDataInPage] = useState<Data[] | null>(null);
+  const [dataInPage, setDataInPage] = useState<Data[] | null>(null)
 
   const handleSearch = () => {
     fetch(`${url}/search`, {
@@ -69,31 +70,31 @@ function App() {
       .then((res) => res.json())
       .then((res) => {
         // console.log("Res", res);
-        setDataInPage(res);
+        setDataInPage(res)
       })
       .catch((err) => {
-        console.log(err);
-      });
-  };
+        console.log(err)
+      })
+  }
 
-  const [selected, setSelected] = useState<{ id: string; name: string }[]>([]);
+  const [selected, setSelected] = useState<{ id: string; name: string }[]>([])
 
   const handleSelected = (id: string, name: string) => {
-    const index = selected.findIndex((item) => item.id === id);
+    const index = selected.findIndex((item) => item.id === id)
     if (index === -1) {
-      if (selected.length < 5) setSelected([...selected, { id, name }]);
+      if (selected.length < 5) setSelected([...selected, { id, name }])
     } else {
-      const newSelected = [...selected];
-      newSelected.splice(index, 1);
-      setSelected(newSelected);
+      const newSelected = [...selected]
+      newSelected.splice(index, 1)
+      setSelected(newSelected)
     }
-  };
+  }
 
   const handleRemoveSelect = (index: number) => {
-    const newSelected = [...selected];
-    newSelected.splice(index, 1);
-    setSelected(newSelected);
-  };
+    const newSelected = [...selected]
+    newSelected.splice(index, 1)
+    setSelected(newSelected)
+  }
 
   const handleClickSubmit = () => {
     fetch(`${url}/recommend`, {
@@ -108,7 +109,7 @@ function App() {
     })
       .then((res) => res.json())
       .then((res: { 1: any[]; 2: any[]; 3: any[]; 4: any[] }[]) => {
-        const resultArray = ([] as any[]).concat(...Object.values(res));
+        const resultArray = ([] as any[]).concat(...Object.values(res))
         setSubmissionObject({
           track_ids: selected.map((song) => song.id),
           r1_id: resultArray[0].id,
@@ -120,26 +121,26 @@ function App() {
           genre: 0,
           mood: 0,
           general: 0,
-        });
-        setRecommendations(resultArray);
+        })
+        setRecommendations(resultArray)
       })
       .catch((err) => {
-        console.log(err);
-      });
-    setSelectionPhase(false);
-  };
+        console.log(err)
+      })
+    setSelectionPhase(false)
+  }
 
   // =======================================
   // Grading results page
-  const [selectionPhase, setSelectionPhase] = useState<boolean>(true);
+  const [selectionPhase, setSelectionPhase] = useState<boolean>(true)
 
-  const [recommendations, setRecommendations] = useState<Data[]>([]);
+  const [recommendations, setRecommendations] = useState<Data[]>([])
 
   const [submissionObject, setSubmissionObject] = useState<ISubmissionObject>(
     {} as ISubmissionObject
-  );
+  )
 
-  const [gradings, setGradings] = useState<number[]>([0, 0, 0, 0, 0]);
+  const [gradings, setGradings] = useState<number[]>([0, 0, 0, 0, 0])
 
   const handleSubmitGrading = () => {
     const submitObject = {
@@ -149,7 +150,7 @@ function App() {
       genre: gradings[2],
       mood: gradings[3],
       general: gradings[4],
-    };
+    }
     fetch(`${url}/submit`, {
       method: "POST",
       headers: {
@@ -157,24 +158,24 @@ function App() {
       },
       body: JSON.stringify(submitObject),
     }).then((_) => {
-      setThankYou(true);
-    });
-  };
+      setThankYou(true)
+    })
+  }
 
   const resetApp = () => {
-    setSearch("");
-    setDataInPage(null);
-    setSelected([]);
-    setSelectionPhase(true);
-    setRecommendations([]);
-    setSubmissionObject({} as ISubmissionObject);
-    setGradings([0, 0, 0, 0, 0]);
-    setThankYou(false);
-  };
+    setSearch("")
+    setDataInPage(null)
+    setSelected([])
+    setSelectionPhase(true)
+    setRecommendations([])
+    setSubmissionObject({} as ISubmissionObject)
+    setGradings([0, 0, 0, 0, 0])
+    setThankYou(false)
+  }
 
   // =======================================
   // Thank you page
-  const [thankYou, setThankYou] = useState<boolean>(false);
+  const [thankYou, setThankYou] = useState<boolean>(false)
   return (
     <div
       style={{
@@ -204,7 +205,7 @@ function App() {
               placeholder="Search a song..."
               onKeyDown={(ev: any) => {
                 if (ev.key === "Enter") {
-                  handleSearch();
+                  handleSearch()
                 }
               }}
               style={{
@@ -281,7 +282,7 @@ function App() {
                       X
                     </span>
                   </div>
-                );
+                )
               })}
               {selected.length === 5 && <div style={{ color: "red" }}>5/5</div>}
             </div>
@@ -332,7 +333,7 @@ function App() {
                     <span>{item.artists?.join(", ")}</span>
                     <span>{item.year}</span>
                   </div>
-                );
+                )
               })
             )}
           </div>
@@ -392,7 +393,7 @@ function App() {
                 <Grid item xs={12} sm={6} xl={3}>
                   <MusicAudioDisplay key={item.id} song={item} />
                 </Grid>
-              );
+              )
             })}
           </Grid>
           <div
@@ -406,6 +407,7 @@ function App() {
               fontWeight={500}
               lineHeight={"24px"}
               color={"#888888"}
+              paddingBottom={3}
             >
               We will ask you to select the best song in your opinion based on
               different criteria.
@@ -457,9 +459,9 @@ function App() {
                               overflow: "hidden",
                             }}
                             onClick={() => {
-                              const newGradings = [...gradings];
-                              newGradings[index] = index2 + 1;
-                              setGradings(newGradings);
+                              const newGradings = [...gradings]
+                              newGradings[index] = index2 + 1
+                              setGradings(newGradings)
                             }}
                           >
                             <Radio checked={gradings[index] === index2 + 1} />
@@ -471,11 +473,11 @@ function App() {
                               {song.name}
                             </Typography>
                           </Grid>
-                        );
+                        )
                       })}
                     </Grid>
                   </div>
-                );
+                )
               })}
             </div>
           </div>
@@ -514,7 +516,7 @@ function App() {
           }}
         >
           <Confetti />
-          <Typography fontSize={24} fontWeight={600}>
+          <Typography fontSize={24} fontWeight={600} paddingBottom={3}>
             Thank you for your time!
           </Typography>
           <Button
@@ -528,7 +530,7 @@ function App() {
         </div>
       )}
     </div>
-  );
+  )
 }
 
-export default App;
+export default App
