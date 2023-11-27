@@ -50,7 +50,6 @@ class KMeansRecommender:
     
     def _remove_input_tracks_from_recommendations(self, track_ids, df):
         """Removes all input songs from the recommendation output"""
-        print(df)
         return df[~(df["id"].isin(track_ids))]
 
     def _get_mean_from_tracks(self, track_ids):
