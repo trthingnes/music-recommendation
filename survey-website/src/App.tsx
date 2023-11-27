@@ -1,7 +1,7 @@
 import { useState } from "react"
 import "./App.css"
 
-import { Button, Grid, Radio, Tooltip, Typography } from "@mui/material"
+import { Button, CircularProgress, Grid, Radio, Tooltip, Typography } from "@mui/material"
 import { Delete, Search } from "@mui/icons-material"
 import MusicAudioDisplay from "./music-audio-display"
 import Confetti from "react-confetti"
@@ -96,7 +96,10 @@ function App() {
     setSelected(newSelected)
   }
 
+  const [loadingSubmitRecommendation, setLoadingSubmitRecommendation] = useState<boolean>(false);
+
   const handleClickSubmit = () => {
+    setLoadingSubmitRecommendation(true);
     fetch(`${url}/recommend`, {
       method: "POST",
       headers: {
@@ -126,6 +129,8 @@ function App() {
       })
       .catch((err) => {
         console.log(err)
+      }).finally(() => {
+        setLoadingSubmitRecommendation(false);
       })
     setSelectionPhase(false)
   }
@@ -141,6 +146,7 @@ function App() {
   )
 
   const [gradings, setGradings] = useState<number[]>([0, 0, 0, 0, 0])
+  const [loadingSubmitGrading, setLoadingSubmitGrading] = useState<boolean>(false);
 
   const handleSubmitGrading = () => {
     const submitObject = {
@@ -151,6 +157,7 @@ function App() {
       mood: gradings[3],
       general: gradings[4],
     }
+    setLoadingSubmitGrading(true);
     fetch(`${url}/submit`, {
       method: "POST",
       headers: {
@@ -159,6 +166,8 @@ function App() {
       body: JSON.stringify(submitObject),
     }).then((_) => {
       setThankYou(true)
+    }).finally(() => {
+      setLoadingSubmitGrading(false);
     })
   }
 
@@ -170,7 +179,9 @@ function App() {
     setRecommendations([])
     setSubmissionObject({} as ISubmissionObject)
     setGradings([0, 0, 0, 0, 0])
-    setThankYou(false)
+    setThankYou(false);
+    setLoadingSubmitGrading(false);
+    setLoadingSubmitRecommendation(false)
   }
 
   // =======================================
@@ -360,7 +371,7 @@ function App() {
               </Button>
             )}
             <div style={{ flex: 1 }} />
-            <Button
+            {loadingSubmitRecommendation ?  <CircularProgress /> : <Button
               style={{ textTransform: "unset", borderRadius: 8 }}
               color="secondary"
               variant="contained"
@@ -368,7 +379,7 @@ function App() {
               disabled={selected.length === 0}
             >
               Submit
-            </Button>
+            </Button>}
           </div>
         </>
       ) : !thankYou ? (
@@ -491,7 +502,7 @@ function App() {
               paddingBottom: 12,
             }}
           >
-            <Button
+            {loadingSubmitGrading ? <CircularProgress/> : <Button
               disabled={gradings.includes(0)}
               onClick={handleSubmitGrading}
               style={{
@@ -503,7 +514,7 @@ function App() {
               color="secondary"
             >
               Submit
-            </Button>
+            </Button>}
           </div>
         </div>
       ) : (
