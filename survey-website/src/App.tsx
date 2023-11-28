@@ -26,7 +26,7 @@ interface ISubmissionObject {
 }
 
 const url = process.env.REACT_APP_BE_URL ?? ""
-
+const MAX_NUMBER_OF_SONGS = 3;
 const criteria = [
   {
     name: "Relevance",
@@ -82,7 +82,7 @@ function App() {
   const handleSelected = (id: string, name: string) => {
     const index = selected.findIndex((item) => item.id === id)
     if (index === -1) {
-      if (selected.length < 5) setSelected([...selected, { id, name }])
+      if (selected.length < MAX_NUMBER_OF_SONGS) setSelected([...selected, { id, name }])
     } else {
       const newSelected = [...selected]
       newSelected.splice(index, 1)
@@ -295,7 +295,7 @@ function App() {
                   </div>
                 )
               })}
-              {selected.length === 5 && <div style={{ color: "red" }}>5/5</div>}
+              {selected.length === MAX_NUMBER_OF_SONGS && <div style={{ color: "red" }}>{MAX_NUMBER_OF_SONGS}/{MAX_NUMBER_OF_SONGS}</div>}
             </div>
           )}
           <div
