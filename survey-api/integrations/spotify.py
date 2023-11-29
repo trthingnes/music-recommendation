@@ -67,3 +67,7 @@ def get_spotify_track_information(id: str):
         return None
 
     return _map_spotify_data(spotify.track(id), spotify.audio_features(id)[0])
+
+
+def get_spotify_track_name(id: str):
+    return spotify.track(id)["name"]

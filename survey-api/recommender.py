@@ -6,7 +6,7 @@ from sklearn.pipeline import Pipeline
 from sklearn.metrics.pairwise import euclidean_distances
 
 from data import dataset, feature_columns
-from integrations.spotify import get_spotify_track_information
+from integrations.spotify import get_spotify_track_information, get_spotify_track_name
 
 
 class KMeansRecommender:
@@ -50,7 +50,9 @@ class KMeansRecommender:
     
     def _remove_input_tracks_from_recommendations(self, track_ids, df):
         """Removes all input songs from the recommendation output"""
-        return df[~(df["id"].isin(track_ids))]
+        names = [get_spotify_track_name(track_id) for track_id in track_ids]
+
+        return df[~(df["id"].isin(track_ids) | df["name"].isin(names))]
 
     def _get_mean_from_tracks(self, track_ids):
         """Combines all tracks into a single mean audio feature vector"""
