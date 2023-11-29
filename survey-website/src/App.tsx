@@ -399,10 +399,10 @@ function App() {
             These are our suggestions
           </Typography>
           <Grid container spacing={2}>
-            {recommendations.map((item: Data) => {
+            {recommendations.map((item: Data, index) => {
               return (
-                <Grid key={item.id} item xs={12} sm={6} xl={3}>
-                  <MusicAudioDisplay song={item} />
+                <Grid  item xs={12} sm={6} xl={3}>
+                  <MusicAudioDisplay song={item} key={index} index={index}/>
                 </Grid>
               )
             })}
