@@ -1,7 +1,7 @@
 import { useState } from "react"
 import "./App.css"
 
-import { Button, CircularProgress, Grid, Radio, Tooltip, Typography } from "@mui/material"
+import { Alert, Button, CircularProgress, Grid, Radio, Snackbar, Tooltip, Typography } from "@mui/material"
 import { Delete, Search } from "@mui/icons-material"
 import MusicAudioDisplay from "./music-audio-display"
 import Confetti from "react-confetti"
@@ -71,9 +71,11 @@ function App() {
       .then((res) => {
         // console.log("Res", res);
         setDataInPage(res)
-      })
-      .catch((err) => {
-        console.log(err)
+      }).catch((err) => {
+        setShowError(true)
+        setTimeout(() => {
+          setShowError(false)
+        }, 6000);
       })
   }
 
@@ -128,7 +130,10 @@ function App() {
         setRecommendations(resultArray)
       })
       .catch((err) => {
-        console.log(err)
+        setShowError(true)
+        setTimeout(() => {
+          setShowError(false)
+        }, 6000);
       }).finally(() => {
         setLoadingSubmitRecommendation(false);
       })
@@ -166,6 +171,11 @@ function App() {
       body: JSON.stringify(submitObject),
     }).then((_) => {
       setThankYou(true)
+    }).catch((err) => {
+      setShowError(true)
+      setTimeout(() => {
+        setShowError(false)
+      }, 6000);
     }).finally(() => {
       setLoadingSubmitGrading(false);
     })
@@ -187,6 +197,9 @@ function App() {
   // =======================================
   // Thank you page
   const [thankYou, setThankYou] = useState<boolean>(false)
+
+  const [showError, setShowError] = useState<boolean>(false)
+
   return (
     <div
       style={{
@@ -198,7 +211,9 @@ function App() {
         overflowX: "hidden",
       }}
     >
-      <div id="embed-iframe" />
+      <Snackbar open={showError} autoHideDuration={6000}>
+        <Alert severity="error">Something went wrong. Please reload the page and try again.</Alert>
+      </Snackbar>
       {selectionPhase ? (
         <>
           <div
