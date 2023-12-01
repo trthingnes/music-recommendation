@@ -212,7 +212,7 @@ function App() {
       }}
     >
       <Snackbar open={showError} autoHideDuration={6000}>
-        <Alert severity="error">Something went wrong. Please reload the page and try again.</Alert>
+        <Alert severity="error">Something went wrong. Please try again.</Alert>
       </Snackbar>
       {selectionPhase ? (
         <>
@@ -235,7 +235,8 @@ function App() {
                 }
               }}
               style={{
-                width: 400,
+                width: "100%",
+                maxWidth: 400,
                 border: "1px solid grey",
                 borderRadius: 8,
                 height: 32,
@@ -252,6 +253,16 @@ function App() {
             >
               Search
             </Button>
+            <div style={{ flex: 1 }} />
+            {loadingSubmitRecommendation ?  <CircularProgress /> : <Button
+              style={{ textTransform: "unset", borderRadius: 8 }}
+              color="secondary"
+              variant="contained"
+              onClick={handleClickSubmit}
+              disabled={selected.length === 0}
+            >
+              Submit
+            </Button>}
           </div>
           {selected.length > 0 && (
             <div
@@ -363,7 +374,7 @@ function App() {
               })
             )}
           </div>
-          <div
+          {/* <div
             style={{
               display: "flex",
               width: "100%",
@@ -373,7 +384,7 @@ function App() {
               boxSizing: "border-box",
             }}
           >
-            {selected.length > 0 && (
+             {selected.length > 0 && (
               <Button
                 variant="contained"
                 color="error"
@@ -384,18 +395,10 @@ function App() {
               >
                 Delete
               </Button>
-            )}
-            <div style={{ flex: 1 }} />
-            {loadingSubmitRecommendation ?  <CircularProgress /> : <Button
-              style={{ textTransform: "unset", borderRadius: 8 }}
-              color="secondary"
-              variant="contained"
-              onClick={handleClickSubmit}
-              disabled={selected.length === 0}
-            >
-              Submit
-            </Button>}
-          </div>
+            )} 
+             <div style={{ flex: 1 }} /> 
+            
+          </div> */}
         </>
       ) : !thankYou ? (
         <div
